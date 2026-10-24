@@ -13,7 +13,7 @@ pnpm test
 DOT_MCP_LIVE=1 pnpm test
 ```
 
-Without direnv, prefix commands with `nix develop -c`. The flake supplies Node 24 and pnpm 12.9.0. `pnpm run doctor` is this project's app-server probe; `pnpm doctor` is pnpm's own diagnostic command.
+Without direnv, prefix commands with `nix develop -c`. The flake supplies Node 24, pnpm 12.9.0 and OpenAI's `tunnel-client` 0.0.18. `pnpm run doctor` is this project's app-server probe; `pnpm doctor` is pnpm's own diagnostic command.
 
 The live test uses the real MCP stdio process for read-only discovery, metadata, control state and history reads. It does not request control or send messages to live sessions. The isolated tests exercise mutation serialization and failure behavior against a fake WebSocket app-server.
 
@@ -74,7 +74,17 @@ Observed approval prompts are informational. This bridge cannot answer them, rep
 
 Official instructions: [Secure MCP Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels) and [Add custom MCP server](https://developers.openai.com/api/docs/guides/custom-mcp-server).
 
-Create a tunnel in Platform and associate it with the target ChatGPT workspace and Platform organization. Obtain the tunnel ID and runtime key. Install `tunnel-client` from Platform's download link or the official [latest release](https://github.com/openai/tunnel-client/releases/latest). Keep credentials outside this repository and do not paste them into chat.
+`tunnel-client` is included in the Nix development environment; no separate installation is needed:
+
+```sh
+direnv reload
+tunnel-client --version
+tunnel-client help quickstart
+```
+
+Without direnv, use `nix develop -c tunnel-client help quickstart`. You can also build only the client with `nix build .#tunnel-client` and run `./result/bin/tunnel-client`. The local package in `nix/tunnel-client.nix` pins the official release archive and SHA-256 for x86_64/aarch64 Linux and Apple Silicon macOS. Intel macOS is unsupported by the pinned nixpkgs. It preserves the bundled `cloudflared` helper, its manifest and license reports. To update, check OpenAI's official [latest release](https://github.com/openai/tunnel-client/releases/latest), then update the version and all three archive hashes in that file.
+
+Create a tunnel in Platform and associate it with the target ChatGPT workspace and Platform organization. Obtain the tunnel ID and runtime key. Keep credentials outside this repository and do not paste them into chat.
 
 After building this project, configure the stdio command using its absolute path:
 
