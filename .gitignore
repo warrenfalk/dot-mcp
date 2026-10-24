@@ -1,0 +1,5 @@
+.direnv/
+.env.local
+node_modules/
+dist/
+.pnpm-store/
