@@ -19,6 +19,8 @@ The live test uses the real MCP stdio process for read-only discovery, metadata,
 
 Run `bin/dot-mcp` after building. Stdout is reserved for MCP; diagnostics go to stderr. The launcher works from any directory and enters the pinned Nix shell. A tunnel client can keep this process running as its stdio child.
 
+For deployment, `nix build .#dot-mcp` produces `result/bin/dot-mcp` and `result/bin/dot-mcp-doctor`. This package includes Node and production dependencies, builds TypeScript and runs isolated tests in the Nix sandbox. Its source includes only the adapter, tests, manifests and compiler configuration; local environment files are excluded. Boot services should use this package directly instead of the development launcher.
+
 ## Connect to the shared server
 
 By default the bridge opens a WebSocket over:
